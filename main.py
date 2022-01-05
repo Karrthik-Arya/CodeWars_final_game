@@ -4,7 +4,7 @@ from pygame.sprite import Group
 import numpy as np
 import cv2
 import time
-import warnings 
+from random import random
 from base import Base
 from collectible import Collectible
 import scriptred
@@ -19,9 +19,7 @@ class Game():
 
         self.__dim = dim
         self.screen = pygame.display.set_mode((self.__dim[0]*20+400,self.__dim[1]*20))
-        #self.score = pygame.display.set_mode((400, 800))
-        #self.scoreboard = pygame.display.set_caption("Code Wars")
-        #self.fps_controller = pygame.time.Clock()
+        self.fps_controller = pygame.time.Clock()
         
         self.redbasepos = red_pos
         self.bluebasepos= blue_pos
@@ -53,7 +51,7 @@ class Game():
         # 4 means base for team blue
 
         self.__redbase = Base(self.screen, self.redbasepos[0]*20, self.redbasepos[1]*20, 'red', self.__redbots, self.__robots,self)
-        self.__bluebase = Base(self.screen, self.bluebasepos[0]*20, self.redbasepos[1]*20, 'blue', self.__bluebots, self.__robots,self)
+        self.__bluebase = Base(self.screen, self.bluebasepos[0]*20, self.bluebasepos[1]*20, 'blue', self.__bluebots, self.__robots,self)
         self.__PositionToRobot[self.redbasepos] = {self.__redbase:True}
         self.__PositionToRobot[self.bluebasepos] = {self.__bluebase:True}
         self.update_score()
@@ -63,15 +61,58 @@ class Game():
         while True:
             iter+=1
             self.screen.fill((60,60,60))
-            scriptblue.ActBase(self.__bluebase)
-            scriptred.ActBase(self.__redbase)
             moves = {}
-            for robo in self.__redbots:
-                n = scriptred.ActRobot(robo)
-                moves[robo] = n
-            for robo in self.__bluebots:
-                n = scriptblue.ActRobot(robo)
-                moves[robo] = n
+            if (random()>0.5):
+                try:
+                    scriptblue.ActBase(self.__bluebase)
+                except:
+                    print("Bluebase error")
+                try:
+                    scriptred.ActBase(self.__redbase)
+                except:
+                    print("Redbase error")
+                
+                for robo in self.__redbots:
+                    try:
+                        n = scriptred.ActRobot(robo)
+                    except:
+                        n=0
+                        print("Redbot error")
+                    moves[robo] = n
+                for robo in self.__bluebots:
+                    try:
+                        n = scriptblue.ActRobot(robo)
+                    except:
+                        n=0
+                        print("Blubot error")
+                    moves[robo] = n
+            else:
+                try:
+                    scriptred.ActBase(self.__redbase)
+                except:
+                    print("Redbase error")
+                try:
+                    scriptblue.ActBase(self.__bluebase)
+                except:
+                    print("Bluebase error")
+
+                for robo in self.__bluebots:
+                    try:
+                        n = scriptblue.ActRobot(robo)
+                    except:
+                        n=0
+                        print("Blue bot error")
+                    moves[robo] = n
+
+                for robo in self.__redbots:
+                    try:
+                        n = scriptred.ActRobot(robo)
+                    except:
+                        n=0
+                        print("Redbot error")
+                    moves[robo] = n
+            
+            
             for robo, n in moves.items():
                 if n == 1:
                     robo.move_up()
@@ -102,13 +143,13 @@ class Game():
             if iter % 10 == 0:
                 self.replenish()
             self.check_events()
-            #self.fps_controller.tick(self.rate)
+            self.fps_controller.tick(self.rate)
             if iter > 1500:
                 break
-            pygame.display.iconify()
-            #result = self.game_over()
-            #if result:
-                #return result
+            #pygame.display.iconify()
+            result = self.game_over()
+            if result != None:
+                return result
         return self.game_over_iter()
        
 
@@ -247,11 +288,11 @@ class Game():
     def create_map(self, img_path):
         """Take info about __collectibles and create the map"""
         im = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-        im = cv2.resize(im, (self.__dim[1],self.__dim[0]))
+        im = cv2.resize(im, self.__dim)
         im = np.array(im)
-        im = im - np.full(self.__dim, 127)
+        im = im - np.full((self.__dim[1],self.__dim[0]), 127)
         im = (im/127)*50
-        return np.array(im.transpose())
+        return np.array(im)
 
     def replenish(self):
         for i in range(0,self.__dim[0]):
@@ -319,7 +360,7 @@ class Game():
     def game_over(self):
         """Check conditions of game over"""
         game_over_font = pygame.font.SysFont(None, 48)
-        if self.__redbase._Base__SelfElixir <= 0:
+        if self.__redbase._Base__SelfElixir <= 1e-2:
             return 0
             print( "Blue Wins")
             game_over = game_over_font.render("Blue Team Wins", True, (100,100,255), (230,230,230))
@@ -327,7 +368,7 @@ class Game():
             pygame.display.flip()
             #time.sleep(5)
             sys.exit(0)
-        elif self.__bluebase._Base__SelfElixir <= 0:
+        elif self.__bluebase._Base__SelfElixir <= 1e-2:
             return 1
             print("Red Wins")
             game_over = game_over_font.render("Red Team Wins", True, (255,100,100), (230,230,230))
@@ -338,5 +379,5 @@ class Game():
             
     
 
-game = Game((40,40), (9,19), (29,19), "test_img3.jpg")
+game = Game((40,40), (19,9), (19,29), "test_img2.jpg")
 print(game.run_game())
