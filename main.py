@@ -432,3 +432,4 @@ for i in range(si,23):
         f = open(name + 'status.pic','wb')
         pickle.dump(S,f)
         f.close()
+        print('Match between',TN[i],'and',TN[j],'culminates!')
