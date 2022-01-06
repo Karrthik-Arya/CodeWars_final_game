@@ -5,7 +5,6 @@ def move_robot(ip,jp,kp,lp):
     return int(move_prob[random.choice(range(ip+jp+kp+lp))])
 
 def ActRobot(robot):
-    print('Hello, I am Bazinga')
     invR=[robot.investigate_nw()  , robot.investigate_up()  , robot.investigate_ne(), 
           robot.investigate_left(),                           robot.investigate_right(),  
           robot.investigate_se()  , robot.investigate_down(), robot.investigate_sw()]

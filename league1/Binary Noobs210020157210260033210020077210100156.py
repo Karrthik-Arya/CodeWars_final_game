@@ -889,7 +889,6 @@ def robot_random_quadrant(robot):
 
 
 def ActRobot(robot):
-    print('Hello, I am Binary Noob!')
     robot_id=robot.GetInitialSignal()[:1]
     return_var=-1
     if('enemy-base' in robot_investigate(robot)):
