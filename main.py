@@ -20,7 +20,7 @@ class Game():
 
         self.__dim = dim
         self.screen = pygame.display.set_mode((self.__dim[0]*20+400,self.__dim[1]*20))
-        self.fps_controller = pygame.time.Clock()
+        #self.fps_controller = pygame.time.Clock()
         
         self.redbasepos = red_pos
         self.bluebasepos= blue_pos
@@ -29,7 +29,7 @@ class Game():
         self.__resources[self.bluebasepos[1]][self.bluebasepos[0]] = 0
         self.GlobalRobotCount = 0
         self.explosion = pygame.image.load("explode.png")
-        self.rate = 10
+        #self.rate = 10
 
         self.__collectibles = []
         
@@ -137,17 +137,17 @@ class Game():
                 self.screen.blit(self.explosion, b.rect)
             self.update_score()
             self.buttons()
-            pygame.display.flip()
+            #pygame.display.flip()
             self.__redbase._Base__MovingAverage = (self.__redbase._Base__MovingAverage*(0.9)) + (self.__redbase._Base__TotalTeamElixir*(0.1))
             
             self.__bluebase._Base__MovingAverage = (self.__bluebase._Base__MovingAverage*(0.9)) + (self.__bluebase._Base__TotalTeamElixir*(0.1))
             if iter % 10 == 0:
                 self.replenish()
             self.check_events()
-            self.fps_controller.tick(self.rate)
+            #self.fps_controller.tick(self.rate)
             if iter > 1500:
                 break
-            #pygame.display.iconify()
+            pygame.display.iconify()
             result = self.game_over()
             if result != None:
                 return result
